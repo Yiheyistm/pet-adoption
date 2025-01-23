@@ -23,6 +23,10 @@ class PetProvider with ChangeNotifier {
     await _saveFavorites();
   }
 
+  PetsModel? findPetById(int id) {
+    return allPets.firstWhere((pet) => pet.id == id);
+  }
+
   Future<void> loadFavorites() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? favoritePetsString = prefs.getString('favoritePets');
@@ -62,20 +66,28 @@ class PetProvider with ChangeNotifier {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchAdoptionRequests() async {
+Stream<List<Map<String, dynamic>>> fetchAdoptionRequests() {
     try {
+      // Get the current user ID
+      final userId = FirebaseAuth.instance.currentUser!.uid;
+
+      // Reference to the 'adoptions' collection
       CollectionReference adoptions =
           FirebaseFirestore.instance.collection('adoptions');
-      QuerySnapshot querySnapshot = await adoptions
-          .where('userId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-          .get();
-      List<Map<String, dynamic>> adoptionRequests = querySnapshot.docs
+
+      // Return a stream of adoption requests filtered by the current user's ID
+      return adoptions
+          .where('userId', isEqualTo: userId)
+          .snapshots()
+          .map((querySnapshot) {
+        return querySnapshot.docs
           .map((doc) => doc.data() as Map<String, dynamic>)
           .toList();
-      return adoptionRequests;
+      });
     } catch (e) {
       print('Failed to fetch adoption requests: $e');
-      return [];
+      // Return an empty stream in case of an error
+      return Stream.value([]);
     }
   }
 }

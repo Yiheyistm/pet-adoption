@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pet_adoption/views/pages/adopted_page.dart';
 import 'package:pet_adoption/views/pages/favourites_page.dart';
 import 'package:pet_adoption/views/pages/homepage.dart';
 import 'package:pet_adoption/views/pages/inbox_page.dart';
@@ -15,7 +16,7 @@ class _BottomTabState extends State<BottomTab> {
   int selectedPage = 0;
   final List<Widget> _pages = [
     const UserHomePage(),
-    const SearchScreen(),
+    const AdoptionRequestsPage(),
     const FavouritesPage(),
     const ProfilePage()
   ];
@@ -52,16 +53,16 @@ class _BottomTabState extends State<BottomTab> {
           BottomNavigationBarItem(
             icon: selectedPage == 1
                 ? const Icon(
-                    Icons.search,
+                    Icons.pets,
                     size: 30,
                     color: Colors.pink,
                   )
                 : const Icon(
-                    Icons.search,
+                    Icons.pets_rounded,
                     size: 30,
                     color: Colors.black,
                   ),
-            label: "Inbox",
+            label: "Adopted",
           ),
           BottomNavigationBarItem(
             icon: selectedPage == 2

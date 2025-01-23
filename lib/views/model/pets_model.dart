@@ -102,7 +102,7 @@ List<PetsModel> newPets = [
     price: 400.0,
   ),
   PetsModel(
-    petName: "Lucifer",
+    petName: "Bobby",
     petImage: "assets/images/hound.jpg",
     age: 13,
     petBreed: "Basset Hound",
@@ -114,3 +114,4 @@ List<PetsModel> newPets = [
 ];
 
 List<PetsModel> allPets = [...newPets, ...topPets];
+

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pet_adoption/provider/pet_provider.dart';
 import 'package:pet_adoption/views/landing_page.dart';
+import 'package:pet_adoption/views/model/pets_model.dart';
 import 'package:pet_adoption/views/widgets/pet_detial.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -64,8 +65,8 @@ class ProfilePage extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: FutureBuilder<List<Map<String, dynamic>>>(
-                future: petProvider.fetchAdoptionRequests(),
+              child: StreamBuilder<List<Map<String, dynamic>>>(
+                stream: petProvider.fetchAdoptionRequests(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -96,9 +97,18 @@ class ProfilePage extends StatelessWidget {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (context) => PetDetail(
-                                      pet: request['pet'],
+                                    pet: PetsModel(
+                                      id: request['petId'],
+                                      petName: request['petName'],
+                                      petBreed: request['petBreed'],
+                                      age: 2,
+                                      description: request['description'],
+                                      price: request['price'],
+                                      petImage: request['petImage'],
+                                      likes: request['likes'],
                                     ),
                                   ),
+                                )
                                 );
                               },
                             ),

@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pet_adoption/provider/pet_provider.dart';
 import 'package:pet_adoption/views/model/pets_model.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +19,9 @@ class _AdoptionPageState extends State<AdoptionPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+
+  // Firestore instance
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -106,19 +111,30 @@ class _AdoptionPageState extends State<AdoptionPage> {
                 const SizedBox(height: 30),
                 Center(
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        petProvider.saveAdoptionRequest(
-                          _nameController.text,
-                          _phoneController.text,
-                          _emailController.text,
-                          widget.pet,
-                        );
+                        // Save adoption request to Firestore
+                        await _firestore.collection('adoptions').add({
+                          'userId': FirebaseAuth.instance.currentUser!.uid,
+                          'petId': widget.pet.id,
+                          'petName': widget.pet.petName,
+                          'petBreed': widget.pet.petBreed,
+                          'petImage': widget.pet.petImage,
+                          'userName': _nameController.text,
+                          'email': _emailController.text,
+                          'phoneNO': _phoneController.text,
+                          'adoptionDate': FieldValue.serverTimestamp(),
+                        });
+
+                        // Show success message
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Processing Adoption')),
+                          const SnackBar(
+                              content: Text('Adoption request submitted!')),
                         );
+
+                        // Navigate back
+                        Navigator.pop(context);
                       }
-                      Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
